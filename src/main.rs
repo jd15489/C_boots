@@ -1,8 +1,11 @@
 use rand::prelude::*;
 use csv::Reader;
 
-use rayon::prelude::*;
 use clap::Parser;
+use indicatif::{
+    ParallelProgressIterator, ProgressBar
+};
+use rayon::prelude::*;
 
 const R: f64 = 0.00198720425864083;
 // const N_SAMPLES: usize = 10000;
@@ -41,10 +44,9 @@ fn main() -> std::io::Result<()> {
         sample_size = energies.len();
     }
     
-    
-
     let cs: Vec<f64> = (0..args.num_samples)
         .into_par_iter()
+        .progress_count(args.num_samples as u64)
         .map(|_|{
             let mut rng = rand::rng();
             sample_and_compute_c(
@@ -65,20 +67,18 @@ fn main() -> std::io::Result<()> {
 }
 
 fn read_file(filename: &str) -> Vec<f64> {
-    println!("Reading {}", filename);
+    let bar = ProgressBar::new_spinner();
+    bar.set_message("Reading file...");
+    bar.enable_steady_tick(std::time::Duration::from_micros(500));
+
     let mut rdr = Reader::from_path(filename).expect("Could not read file");
     let mut energies: Vec<f64> = Vec::new();
-    let mut count = 0;
     for line in rdr.records() {
-        if count % 10_000 == 0 {
-            print!("\rLine {} read", count);
-        }
-        count += 1;
         let record = line.unwrap()[0].parse().unwrap();
         energies.push(record);
     }
-    println!("\rFile Read                ");
 
+    bar.finish_and_clear();
     energies
 }
 
