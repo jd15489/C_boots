@@ -1,5 +1,5 @@
 use rand::prelude::*;
-use csv::Reader;
+use csv::ReaderBuilder;
 
 use clap::Parser;
 use indicatif::{
@@ -83,7 +83,10 @@ fn read_file(filename: &str) -> Vec<f64> {
     bar.set_message("Reading file...");
     bar.enable_steady_tick(std::time::Duration::from_micros(500));
 
-    let mut rdr = Reader::from_path(filename).expect("Could not read file");
+    let mut rdr = ReaderBuilder::new()
+        .comment(Some(b'#'))
+        .from_path(filename)
+        .expect("Could not read file");
     let mut energies: Vec<f64> = Vec::new();
     for line in rdr.records() {
         let record = line.unwrap()[0].parse().unwrap();
