@@ -5,7 +5,7 @@ use clap::Parser;
 use indicatif::{
     ParallelProgressIterator, ProgressBar
 };
-use rayon::prelude::*;
+use rayon::{ThreadPoolBuilder, prelude::*};
 
 const R: f64 = 0.00198720425864083;
 // const N_SAMPLES: usize = 10000;
@@ -22,31 +22,43 @@ struct Args {
     file: String,
     temperature: f64,
 
+    #[arg(short, long, default_value_t = 4)]
+    num_threads: usize,
+
     #[arg(short, long, default_value_t = 1)]
     molecules: usize,
 
     #[arg(short, long, default_value_t = 10_000)]
-    num_samples: usize,
+    samples: usize,
 
     #[arg(short, long, default_value_t = 0)]
-    sample_size: usize,
+    bootstrap_sample_size: usize,
 }
 
 fn main() -> std::io::Result<()> {
     let args = Args::parse();
+
+    println!("Running C_boots");
+    println!("Running on {} thread(s)", &args.num_threads);
+    println!("Using file: {}", &args.file);
     
+    ThreadPoolBuilder::new()
+        .num_threads(args.num_threads)
+        .build_global()
+        .unwrap();
+
     let energies = read_file(&args.file);
     
-    let mut sample_size = args.sample_size;
+    let mut sample_size = args.bootstrap_sample_size;
     if sample_size < 1 {
         sample_size = energies.len();
     } else if sample_size > energies.len() {
         sample_size = energies.len();
     }
-    
-    let cs: Vec<f64> = (0..args.num_samples)
+
+    let cs: Vec<f64> = (0..args.samples)
         .into_par_iter()
-        .progress_count(args.num_samples as u64)
+        .progress_count(args.samples as u64)
         .map(|_|{
             let mut rng = rand::rng();
             sample_and_compute_c(
