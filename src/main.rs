@@ -13,7 +13,7 @@ mod stats;
 #[derive(Parser, Debug)]
 #[command(
     author = "Josh Dunn",
-    version = "0.1",
+    version,
     about = "Computes heat capacity using a bootstrapping method."
 )]
 struct Args {
