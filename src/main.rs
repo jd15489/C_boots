@@ -39,8 +39,8 @@ fn main() -> std::io::Result<()> {
 
     // Report the start of the program and some input parameters
     println!("Running C_boots");
-    println!("Running on {} thread(s)", &args.num_threads);
-    println!("Using file: {}", &args.file);
+    println!("Running on {} thread(s)", args.num_threads);
+    println!("Using file: {}", args.file);
 
     // Build a ThreadPool based on user input or default values
     ThreadPoolBuilder::new()
