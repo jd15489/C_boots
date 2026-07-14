@@ -3,11 +3,11 @@ use rand::prelude::*;
 const R: f64 = 0.00198720425864083;
 
 pub fn sample_and_compute_c(
-    vector: &Vec<f64>,
+    vector: &[f64],
     generator: &mut ThreadRng,
     temperature: &f64,
     sample_size: &usize,
-    molecules: &f64
+    molecules: &f64,
 ) -> f64 {
     let mut sum = 0.;
     let mut sq_sum = 0.;

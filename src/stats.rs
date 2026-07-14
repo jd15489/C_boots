@@ -1,23 +1,19 @@
-
-
-pub fn average(vector: &Vec<f64>) -> f64 {
+pub fn average(data: &[f64]) -> f64 {
     let mut sum = 0.;
-    for e in vector.iter() {
+    for e in data.iter() {
         sum += e
     }
-    let average = sum / (vector.len() as f64);
-    average
+    sum / (data.len() as f64)
 }
 
-pub fn variance(vector: &Vec<f64>) -> f64 {
-    let mut vector_sq = Vec::with_capacity(vector.len());
-    for e in vector.iter() {
-        vector_sq.push(e*e)
-    };
+pub fn variance(data: &[f64]) -> f64 {
+    let mut data_sq = Vec::with_capacity(data.len());
+    for e in data.iter() {
+        data_sq.push(e * e)
+    }
 
-    let vector_average = average(&vector);
-    let variance =  average(&vector_sq) - (vector_average * vector_average);
-    variance
+    let data_average = average(data);
+    average(&data_sq) - (data_average * data_average)
 }
 
 #[cfg(test)]
@@ -26,17 +22,11 @@ mod tests {
 
     #[test]
     fn test_average() {
-        assert_eq!(
-            2.5,
-            average(&Vec::from([1.,2.,3.,4.]))
-        );
+        assert_eq!(2.5, average(&Vec::from([1., 2., 3., 4.])));
     }
 
     #[test]
     fn test_variance() {
-        assert_eq!(
-            1.25,
-            variance(&Vec::from([1.,2.,3.,4.]))
-        );
+        assert_eq!(1.25, variance(&Vec::from([1., 2., 3., 4.])));
     }
 }

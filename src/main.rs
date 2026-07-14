@@ -1,22 +1,20 @@
-use crate::io::read_file;
-use crate::stats::{
-    average, variance
-};
 use crate::bootstrap::sample_and_compute_c;
+use crate::io::read_file;
+use crate::stats::{average, variance};
 
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use rayon::{ThreadPoolBuilder, prelude::*};
 
-mod io; 
-mod stats;
 mod bootstrap;
+mod io;
+mod stats;
 
 #[derive(Parser, Debug)]
 #[command(
-    author="Josh Dunn",
-    version="0.1",
-    about="Computes heat capacity using a bootstrapping method."
+    author = "Josh Dunn",
+    version = "0.1",
+    about = "Computes heat capacity using a bootstrapping method."
 )]
 struct Args {
     file: String,
@@ -43,7 +41,7 @@ fn main() -> std::io::Result<()> {
     println!("Running C_boots");
     println!("Running on {} thread(s)", &args.num_threads);
     println!("Using file: {}", &args.file);
-    
+
     // Build a ThreadPool based on user input or default values
     ThreadPoolBuilder::new()
         .num_threads(args.num_threads)
@@ -52,12 +50,10 @@ fn main() -> std::io::Result<()> {
 
     // Read the file given by the user
     let energies = read_file(&args.file)?;
-    
+
     // Process sample size (the number of samples to take from the input data for a single sample)
     let mut sample_size = args.bootstrap_sample_size;
-    if sample_size < 1 {
-        sample_size = energies.len();
-    } else if sample_size > energies.len() {
+    if sample_size < 1 || sample_size > energies.len() {
         sample_size = energies.len();
     }
 
@@ -67,26 +63,27 @@ fn main() -> std::io::Result<()> {
     // create a progress bar iterator,
     // map a closure onto that iterator,
     // collect the result of calling that mapping.
-    let cs: Vec<f64> = (0..args.samples) 
-        .into_par_iter() 
-        .progress_count(args.samples as u64)  
-        .map(|_|{
+    let cs: Vec<f64> = (0..args.samples)
+        .into_par_iter()
+        .progress_count(args.samples as u64)
+        .map(|_| {
             let mut rng = rand::rng();
             sample_and_compute_c(
                 &energies,
                 &mut rng,
                 &args.temperature,
                 &sample_size,
-                &(args.molecules as f64))
+                &(args.molecules as f64),
+            )
         })
         .collect();
 
     // Calculate the average and variance in heat capacity estimates
     let average_c = average(&cs);
     let variance_c = variance(&cs);
-    
+
     // Report the estimated heat capacity and the error in that estimate
     println!("Average C | Standard Deviation in C");
-    println!(    "{:.7} | {:.7}", average_c, variance_c.sqrt());
+    println!("{:.7} | {:.7}", average_c, variance_c.sqrt());
     Ok(())
 }
