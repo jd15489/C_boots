@@ -1,7 +1,8 @@
+use std::io::Result;
 use csv::ReaderBuilder;
 use indicatif::ProgressBar;
 
-pub fn read_file(filename: &str) -> std::io::Result<Vec<f64>> {
+pub fn read_file(filename: &str) -> Result<Vec<f64>> {
     let bar = ProgressBar::new_spinner();
     bar.set_message("Reading file...");
     bar.enable_steady_tick(std::time::Duration::from_micros(500));

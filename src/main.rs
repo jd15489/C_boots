@@ -2,6 +2,7 @@ use crate::bootstrap::sample_and_compute_c;
 use crate::io::read_file;
 use crate::stats::{average, variance};
 
+use std::io::Result;
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use rayon::{ThreadPoolBuilder, prelude::*};
@@ -33,7 +34,7 @@ struct Args {
     bootstrap_sample_size: usize,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() -> Result<()> {
     // Parse command line arugments
     let args = Args::parse();
 
@@ -44,9 +45,7 @@ fn main() -> std::io::Result<()> {
 
     // Build a ThreadPool based on user input or default values
     ThreadPoolBuilder::new()
-        .num_threads(args.num_threads)
-        .build_global()
-        .unwrap();
+        .num_threads(args.num_threads);
 
     // Read the file given by the user
     let energies = read_file(&args.file)?;
