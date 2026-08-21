@@ -1,3 +1,8 @@
+import re
+import pandas as pd
+
+from pathlib import Path
+
 def read_log(file: Path) -> pd.DataFrame:
     data = []
     names = []
@@ -31,3 +36,8 @@ def read_log(file: Path) -> pd.DataFrame:
                 
     data = pd.DataFrame(data, columns=names[0], dtype=float)
     return data
+
+def save_internal_energy_to_file(output_csv: Path, amber_output: Path):
+    data = read_log(amber_output)
+    data.to_csv(output_csv)
+        
