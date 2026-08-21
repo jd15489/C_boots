@@ -38,6 +38,5 @@ def read_log(file: Path) -> pd.DataFrame:
     return data
 
 def save_internal_energy_to_file(output_csv: Path, amber_output: Path):
-    data = read_log(amber_output)
+    data = read_log(amber_output)['Etot']
     data.to_csv(output_csv)
-        
