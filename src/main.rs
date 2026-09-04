@@ -2,10 +2,10 @@ use crate::bootstrap::sample_and_compute_c;
 use crate::io::read_file;
 use crate::stats::{average, variance};
 
-use std::io::Result;
 use clap::Parser;
 use indicatif::ParallelProgressIterator;
 use rayon::{ThreadPoolBuilder, prelude::*};
+use std::io::Result;
 
 mod bootstrap;
 mod io;
@@ -44,8 +44,7 @@ fn main() -> Result<()> {
     println!("Using file: {}", args.file);
 
     // Build a ThreadPool based on user input or default values
-    ThreadPoolBuilder::new()
-        .num_threads(args.num_threads);
+    ThreadPoolBuilder::new().num_threads(args.num_threads);
 
     // Read the file given by the user
     let energies = read_file(&args.file)?;

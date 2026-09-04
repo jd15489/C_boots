@@ -1,6 +1,6 @@
-use std::io::Result;
 use csv::ReaderBuilder;
 use indicatif::ProgressBar;
+use std::io::Result;
 
 pub fn read_file(filename: &str) -> Result<Vec<f64>> {
     let bar = ProgressBar::new_spinner();
